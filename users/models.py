@@ -6,7 +6,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import RegexValidator
 from backend.utils import get_currency_by_location
-
+from django.http import HttpRequest
 class CustomUserManager(BaseUserManager):
     """
     Custom user model manager where email is the unique identifiers
@@ -59,7 +59,8 @@ class User(AbstractUser):
     
     def save(self, *args, **kwargs):
         if not self.currency:
-            ip_address = self.request.META.get('REMOTE_ADDR')  # Replace with the actual user's IP address
+            request = HttpRequest()
+            ip_address = request.META.get('REMOTE_ADDR')  # Replace with the actual user's IP address
             self.currency = get_currency_by_location(ip_address)
         super().save(*args, **kwargs)
 
